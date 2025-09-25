@@ -555,7 +555,12 @@ class ProductionInstanceManager extends EventEmitter {
     await fs.mkdir(sessionPath, { recursive: true });
     await fs.mkdir(profilePath, { recursive: true });
 
-    // Production-optimierte Puppeteer-Args
+    // Ensure browserProfile exists
+    if (!instance.browserProfile) {
+      instance.browserProfile = this.generateBrowserProfile();
+    }
+
+    // Production-optimierte Puppeteer-Args für Ubuntu VPS
     const productionArgs = [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -566,10 +571,13 @@ class ProductionInstanceManager extends EventEmitter {
       '--disable-gpu',
       '--disable-software-rasterizer',
       '--memory-pressure-off',
+      '--disable-extensions',
+      '--disable-plugins',
+      '--disable-images',
       `--max-old-space-size=${this.config.maxMemoryPerInstance}`,
-      `--user-agent=${instance.browserProfile.userAgent}`,
-      `--window-size=${instance.browserProfile.screenWidth},${instance.browserProfile.screenHeight}`,
-      `--lang=${instance.browserProfile.language}`
+      `--user-agent=${instance.browserProfile.userAgent || 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'}`,
+      `--window-size=${instance.browserProfile.screenWidth || 1280},${instance.browserProfile.screenHeight || 720}`,
+      `--lang=${instance.browserProfile.language || 'en-US'}`
     ];
 
     const client = new Client({
@@ -586,8 +594,8 @@ class ProductionInstanceManager extends EventEmitter {
         // DevTools-Port für Production-Monitoring
         devtools: false,
         defaultViewport: {
-          width: instance.browserProfile.screenWidth,
-          height: instance.browserProfile.screenHeight
+          width: instance.browserProfile.screenWidth || 1280,
+          height: instance.browserProfile.screenHeight || 720
         }
       },
       webVersionCache: {
