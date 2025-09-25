@@ -5,7 +5,7 @@
 
 class ApiClient {
   constructor() {
-    // Use absolute URL for production on wa.plest.de
+    // Use current origin for API calls (works with Nginx proxy)
     this.baseURL = typeof window !== 'undefined' ? `${window.location.origin}/api` : '/api';
     this.token = null;
 
@@ -13,6 +13,8 @@ class ApiClient {
     if (typeof window !== 'undefined') {
       this.token = localStorage.getItem('jwt-token');
     }
+
+    console.log('API Client initialized:', this.baseURL);
   }
 
   setToken(token) {
