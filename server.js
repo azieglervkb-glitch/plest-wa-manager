@@ -193,53 +193,66 @@ const path = require('path');
 app.use('/_next/static', express.static(path.join(__dirname, 'frontend/.next/static')));
 app.use('/static', express.static(path.join(__dirname, 'frontend/.next/static')));
 
+// Serve React frontend static files from Next.js build
+app.use(express.static(path.join(__dirname, 'frontend/.next/static')));
+app.use('/_next/static', express.static(path.join(__dirname, 'frontend/.next/static')));
+
 // Serve React app for all non-API routes
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API route not found' });
   }
 
-  // Try to serve static HTML from Next.js build
-  const indexPath = path.join(__dirname, 'frontend/.next/server/pages/index.html');
-  if (require('fs').existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    // Fallback: Serve React login redirect
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>WhatsApp Manager</title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-        </head>
-        <body>
-          <div id="root">
-            <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial;">
-              <div style="text-align: center;">
-                <h1>WhatsApp Manager</h1>
-                <p>Loading admin panel...</p>
-                <script>
-                  setTimeout(() => {
-                    fetch('/api/health')
-                      .then(r => r.json())
-                      .then(data => {
-                        if (data.status === 'healthy') {
-                          window.location.href = '/login';
-                        }
-                      })
-                      .catch(() => {
-                        document.body.innerHTML = '<h1>System Starting...</h1><p>Please wait and refresh.</p>';
-                      });
-                  }, 1000);
-                </script>
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `);
+  // Check for standalone build first
+  const standalonePath = path.join(__dirname, 'frontend/.next/standalone/index.html');
+  if (require('fs').existsSync(standalonePath)) {
+    res.sendFile(standalonePath);
+    return;
   }
+
+  // Check for regular build
+  const buildPath = path.join(__dirname, 'frontend/build/index.html');
+  if (require('fs').existsSync(buildPath)) {
+    res.sendFile(buildPath);
+    return;
+  }
+
+  // Fallback: HTML that loads React
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>WhatsApp Manager - Admin Panel</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+          .loader { display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
+        </style>
+      </head>
+      <body>
+        <div class="loader">
+          <h1>WhatsApp Manager</h1>
+          <p>Starting admin panel...</p>
+          <div id="status">Checking system health...</div>
+        </div>
+        <script>
+          fetch('/api/health')
+            .then(r => r.json())
+            .then(data => {
+              document.getElementById('status').innerHTML =
+                'System: ' + data.status + '<br>' +
+                'MongoDB: ' + data.mongodb + '<br>' +
+                'Instances: ' + data.instances + '<br>' +
+                '<a href="/api/auth/login" style="color: #000; text-decoration: none; padding: 10px 20px; border: 1px solid #ccc; margin-top: 20px; display: inline-block;">Continue to Login</a>';
+            })
+            .catch(() => {
+              document.getElementById('status').innerHTML = 'System starting... Please refresh in a moment.';
+            });
+        </script>
+      </body>
+    </html>
+  `);
 });
 
 console.log('✅ React frontend serving enabled');
