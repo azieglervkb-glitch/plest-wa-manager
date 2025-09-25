@@ -580,7 +580,7 @@ class ProductionInstanceManager extends EventEmitter {
       puppeteer: {
         executablePath: puppeteerExtra.executablePath(),
         headless: process.env.NODE_ENV === 'production' ? 'new' : true,
-        userDataDir: profilePath,
+        // userDataDir: profilePath, // REMOVED: Not compatible with LocalAuth
         args: productionArgs,
         ignoreDefaultArgs: ['--enable-automation'],
         // DevTools-Port für Production-Monitoring
