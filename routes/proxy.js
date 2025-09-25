@@ -47,4 +47,4 @@ router.post('/:apiKey/sendMessage',
   }
 );
 
-module.exports = { router };
+module.exports = router;

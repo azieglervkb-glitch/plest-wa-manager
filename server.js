@@ -87,7 +87,7 @@ try {
 }
 
 try {
-  const { router: proxyRoutes } = require('./routes/proxy');
+  const proxyRoutes = require('./routes/proxy');
   app.use('/api/proxy', proxyRoutes);
   console.log('✅ WhatsApp Proxy routes loaded');
 } catch (error) {
@@ -103,7 +103,7 @@ try {
 }
 
 try {
-  const { router: webhookRoutes } = require('./routes/webhooks');
+  const webhookRoutes = require('./routes/webhooks');
   app.use('/api/webhooks', webhookRoutes);
   console.log('✅ Webhook routes loaded');
 } catch (error) {

@@ -3,34 +3,27 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
 
-  // API proxy for development (points to wa.plest.de in production)
+  // API proxy for development
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: process.env.NODE_ENV === 'production'
-          ? '/api/:path*'  // Use same origin in production
-          : 'http://wa.plest.de/api/:path*', // Proxy to live server in development
+        destination: 'http://localhost:5000/api/:path*',
       },
     ];
   },
 
-  // Output configuration for static export
+  // Clean standalone build
   output: 'standalone',
 
   // Asset optimization
   images: {
-    domains: ['wa.plest.de'],
-    unoptimized: true // For better compatibility
+    unoptimized: true
   },
-
-  // Build configuration
-  distDir: 'build',
 
   // Environment variables
   env: {
-    BACKEND_URL: process.env.BACKEND_URL || 'http://wa.plest.de',
-    WS_URL: process.env.WS_URL || 'ws://wa.plest.de',
+    BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:5000',
   },
 };
 
