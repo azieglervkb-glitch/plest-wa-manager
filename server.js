@@ -186,4 +186,62 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
+// Serve React frontend from backend (production solution)
+const path = require('path');
+
+// Serve static files from Next.js build
+app.use('/_next/static', express.static(path.join(__dirname, 'frontend/.next/static')));
+app.use('/static', express.static(path.join(__dirname, 'frontend/.next/static')));
+
+// Serve React app for all non-API routes
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API route not found' });
+  }
+
+  // Try to serve static HTML from Next.js build
+  const indexPath = path.join(__dirname, 'frontend/.next/server/pages/index.html');
+  if (require('fs').existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    // Fallback: Serve React login redirect
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>WhatsApp Manager</title>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body>
+          <div id="root">
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial;">
+              <div style="text-align: center;">
+                <h1>WhatsApp Manager</h1>
+                <p>Loading admin panel...</p>
+                <script>
+                  setTimeout(() => {
+                    fetch('/api/health')
+                      .then(r => r.json())
+                      .then(data => {
+                        if (data.status === 'healthy') {
+                          window.location.href = '/login';
+                        }
+                      })
+                      .catch(() => {
+                        document.body.innerHTML = '<h1>System Starting...</h1><p>Please wait and refresh.</p>';
+                      });
+                  }, 1000);
+                </script>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `);
+  }
+});
+
+console.log('✅ React frontend serving enabled');
+
 startComplete();
