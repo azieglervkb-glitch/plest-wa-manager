@@ -5,8 +5,8 @@
 
 class ApiClient {
   constructor() {
-    // Use current origin for API calls (works with Nginx proxy)
-    this.baseURL = typeof window !== 'undefined' ? `${window.location.origin}/api` : '/api';
+    // Use absolute URL for API calls to avoid routing issues
+    this.baseURL = '/api';
     this.token = null;
 
     // Initialize token from localStorage if available
@@ -46,6 +46,7 @@ class ApiClient {
     const config = {
       method,
       headers: this.getHeaders(),
+      credentials: 'include', // Important for CORS
     };
 
     if (data && ['POST', 'PUT', 'PATCH'].includes(method)) {
@@ -53,6 +54,8 @@ class ApiClient {
     }
 
     try {
+      console.log(`API Request: ${method} ${url}`, { headers: config.headers });
+
       const response = await fetch(url, config);
 
       // Handle different response types
@@ -65,8 +68,10 @@ class ApiClient {
         responseData = await response.text();
       }
 
+      console.log(`API Response: ${response.status}`, responseData);
+
       if (!response.ok) {
-        throw new Error(responseData.error || responseData.message || `HTTP ${response.status}`);
+        throw new Error(responseData.error || responseData.message || `HTTP ${response.status}: ${responseData}`);
       }
 
       return responseData;

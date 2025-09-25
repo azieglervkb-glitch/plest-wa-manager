@@ -51,7 +51,11 @@ export default function QRCodeDialog({ instance, open, onClose, onStatusChange }
     setError('');
 
     try {
+      console.log('Fetching QR code for instance:', instance.instanceId);
+
       const response = await apiClient.getInstanceQR(instance.instanceId);
+
+      console.log('QR Code API response:', response);
 
       if (response.qrCode) {
         setQrCode(response.qrCode);
@@ -60,13 +64,16 @@ export default function QRCodeDialog({ instance, open, onClose, onStatusChange }
         if (onStatusChange) {
           onStatusChange(instance.instanceId, response.status);
         }
+
+        showInfo('QR code loaded successfully');
       } else {
         setError('No QR code available. Try starting the instance first.');
+        console.log('No QR code in response:', response);
       }
     } catch (error) {
       console.error('Failed to fetch QR code:', error);
       setError(`Failed to load QR code: ${error.message}`);
-      showError('Failed to load QR code');
+      showError(`QR Code Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
