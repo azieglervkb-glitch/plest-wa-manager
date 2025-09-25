@@ -27,13 +27,13 @@ import {
   ExitToApp as LogoutIcon,
   AccountCircle,
   Notifications as NotificationsIcon,
-  Health as HealthIcon
+  CheckCircle as HealthIcon
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
 import Link from 'next/link';
 
-const drawerWidth = 240;
+const drawerWidth = 200; // Smaller sidebar
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, href: '/dashboard' },
@@ -68,20 +68,30 @@ export default function Layout({ children }) {
 
   const drawer = (
     <div>
-      {/* Logo/Header */}
-      <Box sx={{ p: 2, textAlign: 'center', borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6" color="primary" fontWeight="bold">
-          📱 WhatsApp Manager
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Admin Panel
+      {/* Minimal Logo */}
+      <Box
+        sx={{
+          p: 2,
+          textAlign: 'center',
+          borderBottom: '1px solid #f0f0f0',
+          backgroundColor: '#ffffff'
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            color: '#000000',
+            fontWeight: 500,
+            fontSize: '1rem'
+          }}
+        >
+          WhatsApp Manager
         </Typography>
       </Box>
 
-      {/* Navigation Menu */}
-      <List>
+      {/* Clean Navigation */}
+      <List sx={{ pt: 1 }}>
         {menuItems.map((item) => {
-          // Hide admin-only items for non-admins
           if (item.adminOnly && !isAdmin()) {
             return null;
           }
@@ -94,36 +104,70 @@ export default function Layout({ children }) {
                 button
                 selected={isActive}
                 sx={{
+                  mx: 1,
+                  mb: 0.5,
+                  borderRadius: 1,
                   '&.Mui-selected': {
-                    backgroundColor: 'primary.main',
-                    color: 'white',
+                    backgroundColor: '#f5f5f5',
+                    color: '#000000',
                     '& .MuiListItemIcon-root': {
-                      color: 'white',
+                      color: '#000000',
                     },
+                  },
+                  '&:hover': {
+                    backgroundColor: '#f9f9f9',
                   },
                 }}
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ color: '#666666', minWidth: 36 }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontSize: '0.875rem',
+                    fontWeight: isActive ? 500 : 400
+                  }}
+                />
               </ListItem>
             </Link>
           );
         })}
       </List>
 
-      <Divider />
+      <Divider sx={{ mx: 1, backgroundColor: '#f0f0f0' }} />
 
-      {/* System Status */}
+      {/* Minimal System Status */}
       <Box sx={{ p: 2 }}>
-        <Typography variant="caption" color="text.secondary" display="block">
+        <Typography
+          variant="caption"
+          sx={{
+            color: '#999999',
+            fontSize: '0.7rem',
+            display: 'block',
+            mb: 1
+          }}
+        >
           System Status
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-          <HealthIcon sx={{ fontSize: 16, color: 'success.main', mr: 1 }} />
-          <Typography variant="body2" color="success.main">
-            Healthy
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box
+            sx={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              backgroundColor: '#00C851',
+              mr: 1
+            }}
+          />
+          <Typography
+            variant="body2"
+            sx={{
+              color: '#666666',
+              fontSize: '0.75rem'
+            }}
+          >
+            Online
           </Typography>
         </Box>
       </Box>
@@ -132,44 +176,60 @@ export default function Layout({ children }) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {/* App Bar */}
+      {/* Minimal App Bar */}
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #f0f0f0'
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: '56px !important' }}>
           <IconButton
             color="inherit"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{
+              mr: 2,
+              display: { sm: 'none' },
+              color: '#000000'
+            }}
           >
             <MenuIcon />
           </IconButton>
 
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            WhatsApp Manager
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
+              flexGrow: 1,
+              color: '#000000',
+              fontWeight: 500,
+              fontSize: '1rem'
+            }}
+          >
+            Admin Panel
           </Typography>
 
-          {/* Notifications */}
-          <Tooltip title="Notifications">
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
-
-          {/* User Menu */}
+          {/* Minimal User Menu */}
           <Tooltip title="Account">
             <IconButton
-              color="inherit"
               onClick={handleUserMenuOpen}
+              sx={{ color: '#000000' }}
             >
-              <Avatar sx={{ width: 32, height: 32 }}>
+              <Avatar
+                sx={{
+                  width: 28,
+                  height: 28,
+                  backgroundColor: '#f5f5f5',
+                  color: '#000000',
+                  fontSize: '0.75rem'
+                }}
+              >
                 {user?.username?.charAt(0).toUpperCase() || 'A'}
               </Avatar>
             </IconButton>
@@ -180,14 +240,21 @@ export default function Layout({ children }) {
             open={Boolean(userMenuAnchor)}
             onClose={handleUserMenuClose}
             onClick={handleUserMenuClose}
+            sx={{
+              '& .MuiPaper-root': {
+                borderRadius: 1,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                border: '1px solid #f0f0f0'
+              }
+            }}
           >
-            <MenuItem disabled>
-              <AccountCircle sx={{ mr: 1 }} />
+            <MenuItem disabled sx={{ fontSize: '0.75rem' }}>
+              <AccountCircle sx={{ mr: 1, fontSize: 16 }} />
               {user?.email}
             </MenuItem>
             <Divider />
-            <MenuItem onClick={handleLogout}>
-              <LogoutIcon sx={{ mr: 1 }} />
+            <MenuItem onClick={handleLogout} sx={{ fontSize: '0.75rem' }}>
+              <LogoutIcon sx={{ mr: 1, fontSize: 16 }} />
               Logout
             </MenuItem>
           </Menu>
@@ -203,12 +270,15 @@ export default function Layout({ children }) {
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better mobile performance
-          }}
+          ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              backgroundColor: '#ffffff',
+              borderRight: '1px solid #f0f0f0'
+            },
           }}
         >
           {drawer}
@@ -219,7 +289,12 @@ export default function Layout({ children }) {
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              backgroundColor: '#ffffff',
+              borderRight: '1px solid #f0f0f0'
+            },
           }}
           open
         >
@@ -227,14 +302,15 @@ export default function Layout({ children }) {
         </Drawer>
       </Box>
 
-      {/* Main Content */}
+      {/* Minimal Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: 8 // Account for AppBar height
+          mt: 7, // Smaller header offset
+          backgroundColor: '#ffffff'
         }}
       >
         {children}

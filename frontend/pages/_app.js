@@ -5,41 +5,56 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from '../contexts/AuthContext';
 import { NotificationProvider } from '../contexts/NotificationContext';
 
-// Material-UI Theme
+// Minimal Clean Theme
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976d2',
+      main: '#000000', // Black for minimal look
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#666666', // Gray
     },
     success: {
-      main: '#2e7d32',
+      main: '#00C851', // Clean green
     },
     warning: {
-      main: '#ed6c02',
+      main: '#ff9800', // Clean orange
     },
     error: {
-      main: '#d32f2f',
+      main: '#ff1744', // Clean red
+    },
+    background: {
+      default: '#ffffff', // Pure white background
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#000000',
+      secondary: '#666666',
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
-    },
+    fontFamily: '"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 600,
+    h1: { fontWeight: 600, fontSize: '2.5rem' },
+    h2: { fontWeight: 600, fontSize: '2rem' },
+    h3: { fontWeight: 600, fontSize: '1.75rem' },
+    h4: { fontWeight: 500, fontSize: '1.5rem' },
+    h5: { fontWeight: 500, fontSize: '1.25rem' },
+    h6: { fontWeight: 500, fontSize: '1rem' },
+    body1: { fontSize: '0.875rem' },
+    body2: { fontSize: '0.75rem' },
   },
   components: {
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          borderRadius: 8,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          borderRadius: 4,
+          border: '1px solid #f0f0f0',
         },
       },
     },
@@ -47,7 +62,53 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 6,
+          borderRadius: 4,
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: 'none',
+          },
+        },
+        contained: {
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          '&:hover': {
+            backgroundColor: '#333333',
+          },
+        },
+        outlined: {
+          borderColor: '#e0e0e0',
+          color: '#000000',
+          '&:hover': {
+            borderColor: '#000000',
+            backgroundColor: 'rgba(0,0,0,0.04)',
+          },
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+          boxShadow: '0 1px 0 rgba(0,0,0,0.1)',
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#ffffff',
+          borderRight: '1px solid #f0f0f0',
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+        },
+        outlined: {
+          backgroundColor: '#ffffff',
         },
       },
     },
