@@ -100,10 +100,10 @@ class ProductionInstanceManager extends EventEmitter {
       logger.info('Starting instance recovery process...');
 
       // Alle Instanzen aus DB laden, die auf diesem Server laufen sollten
+      // FIX: Load ALL instances, not just ones with processId (new instances have processId: null)
       const instances = await Instance.find({
         serverId: this.serverId,
-        processId: { $ne: null },
-        status: { $in: ['connecting', 'qr_pending', 'authenticated', 'ready'] }
+        status: { $in: ['created', 'connecting', 'qr_pending', 'authenticated', 'ready'] }
       });
 
       logger.info(`Found ${instances.length} instances to recover`);
@@ -131,6 +131,28 @@ class ProductionInstanceManager extends EventEmitter {
    */
   async recoverSingleInstance(instance) {
     const { instanceId, processId } = instance;
+
+    // Handle new instances without processId
+    if (!processId) {
+      logger.info(`Loading new instance ${instanceId} (no processId)`);
+      try {
+        const client = await this.createWhatsAppClient(instanceId, instance);
+        this.instances.set(instanceId, {
+          client,
+          instance,
+          startTime: Date.now(),
+          messageCount: 0,
+          lastActivity: Date.now(),
+          recovered: false
+        });
+        logger.info(`New instance ${instanceId} loaded into memory`);
+        return true;
+      } catch (error) {
+        logger.error(`Failed to load new instance ${instanceId}:`, error);
+        await instance.setStatus('error');
+        return false;
+      }
+    }
 
     // Prüfen ob Browser-Process noch läuft
     const isProcessAlive = await this.isProcessAlive(processId);
