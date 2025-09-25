@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="WhatsApp Multi-Instance Manager" />
+    <title>WhatsApp Manager</title>
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+        // Minimal Frontend - zeigt API-Dokumentation
+        document.getElementById('root').innerHTML = `
+            <div style="max-width: 800px; margin: 50px auto; padding: 20px; font-family: Arial, sans-serif;">
+                <h1>🚀 WhatsApp Multi-Instance Manager</h1>
+                <p><strong>Status:</strong> <span style="color: green;">Production Ready</span></p>
+
+                <h2>📡 API Endpoints</h2>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                    <h3>Authentication</h3>
+                    <code>POST /api/auth/register</code><br>
+                    <code>POST /api/auth/login</code><br>
+                    <code>GET /api/auth/me</code>
+                </div>
+
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                    <h3>Instance Management</h3>
+                    <code>GET /api/instances</code><br>
+                    <code>POST /api/instances</code><br>
+                    <code>POST /api/instances/{id}/start</code><br>
+                    <code>POST /api/instances/{id}/stop</code><br>
+                    <code>DELETE /api/instances/{id}</code>
+                </div>
+
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                    <h3>🔥 Reverse Proxy API (Main Feature)</h3>
+                    <code>POST /api/proxy/{apiKey}/sendMessage</code><br>
+                    <code>GET /api/proxy/{apiKey}/chats</code><br>
+                    <code>GET /api/proxy/{apiKey}/contacts</code><br>
+                    <code>POST /api/proxy/{apiKey}/createGroup</code><br>
+                    <code>POST /api/proxy/{apiKey}/{method}</code> - <strong>108 whatsapp-web.js methods!</strong>
+                </div>
+
+                <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                    <h3>Monitoring</h3>
+                    <code>GET /api/health</code><br>
+                    <code>GET /metrics</code> (Prometheus)<br>
+                    <code>GET /api/health/detailed</code>
+                </div>
+
+                <h2>🚀 Usage Example</h2>
+                <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">
+// 1. Register user
+POST /api/auth/register
+{ "username": "user", "email": "user@example.com", "password": "password123" }
+
+// 2. Create instance
+POST /api/instances
+{ "name": "My WhatsApp", "description": "Test instance" }
+→ Returns: { "apiKey": "abc123...", "instanceId": "inst_..." }
+
+// 3. Start instance
+POST /api/instances/{instanceId}/start
+
+// 4. Get QR code for auth
+GET /api/instances/{instanceId}/qr
+
+// 5. Use WhatsApp API with 100% compatibility
+POST /api/proxy/{apiKey}/sendMessage
+{ "params": ["1234567890@c.us", "Hello World!"] }
+
+POST /api/proxy/{apiKey}/getChats
+GET /api/proxy/{apiKey}/contacts
+// ... all 108 whatsapp-web.js methods available!
+                </pre>
+
+                <p><strong>Full React Dashboard coming soon...</strong></p>
+                <p>For now, use the API directly or tools like Postman.</p>
+
+                <div style="margin-top: 40px; padding: 20px; background: #fff3cd; border-radius: 5px;">
+                    <h3>⚠️ Production Notes</h3>
+                    <ul>
+                        <li>Each instance requires QR code scan for WhatsApp authentication</li>
+                        <li>Rate limits: 20 messages per minute per instance</li>
+                        <li>Memory limit: 512MB per instance</li>
+                        <li>Auto-restart on crashes with circuit breaker</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    </script>
+</body>
+</html>

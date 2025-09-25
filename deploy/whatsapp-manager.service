@@ -1,0 +1,65 @@
+[Unit]
+Description=WhatsApp Multi-Instance Manager - Production Service
+Documentation=https://github.com/yourrepo/whatsapp-multi-instance-manager
+After=network.target mongod.service redis-server.service
+Wants=mongod.service redis-server.service
+Requires=network.target
+
+[Service]
+Type=simple
+User=whatsapp-manager
+Group=whatsapp-manager
+WorkingDirectory=/opt/whatsapp-manager
+Environment=NODE_ENV=production
+Environment=PATH=/usr/bin:/usr/local/bin
+EnvironmentFile=/opt/whatsapp-manager/.env.production
+
+# Main process
+ExecStart=/usr/bin/node server.js
+ExecReload=/bin/kill -USR1 $MAINPID
+
+# Process management
+Restart=always
+RestartSec=10
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Security settings
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/whatsapp-manager
+ReadWritePaths=/opt/whatsapp-manager/sessions
+ReadWritePaths=/opt/whatsapp-manager/browser-profiles
+ReadWritePaths=/opt/whatsapp-manager/logs
+ReadWritePaths=/opt/whatsapp-manager/backups
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Memory limits (8GB total for service)
+MemoryMax=8G
+MemoryHigh=7G
+
+# CPU limits (max 80% of system CPU)
+CPUQuota=800%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=whatsapp-manager
+
+# Graceful shutdown (30 seconds timeout)
+TimeoutStopSec=30s
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
